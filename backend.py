@@ -1,6 +1,6 @@
 import sqlite3
-from fastapi import FastAPI, Path, UploadFile, File, Form, handle_uplo
-from sqlaclhemy import create_engine, Column, Integer, String
+from fastapi import FastAPI, Path, UploadFile, File, Form
+from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 import stripe
 import requests
@@ -14,7 +14,7 @@ engine = create_engine('sqlite:///db.sqlite3')
 
 class Stats(Base):
     __tablename__ = 'items'
-    id = Column(Integer, primary_key=True) + 1
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     age = Column(Integer, primary_key=True)
     description = Column(String)
@@ -55,8 +55,7 @@ def get_item(item_id: int = Path(...), limit: int = 10, offset: int = 0):
     else:
         return {'error':'not found'}
 @app.post("/upload/found")
-def upload_found(
-        file: UploadFile = File(...),
+def upload_found(file: UploadFile = File(...),
         lat: float = Form(...),
         lon: float = Form(...),
         contact: str = Form(...)
@@ -89,7 +88,6 @@ def get_geodata(lat: float, lon: float, limit: int = 30):
     geodata = ';'.join([str(lat), str(lon)])
 
 @app.post('/geodata')
-
 
 @app.delete("/items/{item_id}")
 def delete_item(item_id: int = Path(...), limit: int = 5, offset: int = 0):
@@ -124,16 +122,3 @@ def img_sorter(id, confidence_score):
         if file_size <= size_limit and confidence_score >= 0.8:
             shutil.move(file_path, os.listdir('./saved_images')[0])
     return os.listdir('./saved_images')
-
-
-
-
-
-
-
-
-
-
-
-
-
