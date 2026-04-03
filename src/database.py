@@ -51,3 +51,5 @@ class DBHandler():
             ))
 
         logging.info("The dog was deleted successfully!")
+
+db_handler = DBHandler()

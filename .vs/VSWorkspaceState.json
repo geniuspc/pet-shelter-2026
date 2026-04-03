@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src"
+    "\\src",
+    "\\steps"
   ],
-  "SelectedNode": "\\.gitignore",
+  "SelectedNode": "\\requirements.txt",
   "PreviewInSolutionExplorer": false
 }

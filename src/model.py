@@ -45,7 +45,7 @@ class MLHandler():
 
     def encode_image(self , image) -> np.ndarray:
 
-        emb = self.model.encode(image)
+        emb = self.model.encode(image , convert_to_numpy = True)
 
         #TODO : normalize 
 
@@ -61,3 +61,4 @@ class MLHandler():
 
         return is_valid
 
+ml_core = MLHandler()
