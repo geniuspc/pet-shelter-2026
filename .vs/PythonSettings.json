@@ -1,3 +1,4 @@
 {
-  "Interpreter": "Workspace|Workspace|mlvenv"
+  "Interpreter": "Workspace|Workspace|mlvenv",
+  "SuppressPackageInstallationPrompt": true
 }
