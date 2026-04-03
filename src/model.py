@@ -5,8 +5,11 @@ class Dog(Base):
     __tablename__ = 'dogs'
     id = Column(Integer, primary_key=True, index=True)
     path = Column(String)
+    age = Column(Integer)
+    gender = Column(String)
     status = Column(String)
     contact = Column(String)
+    description = Column(String)
 
 class Location(Base):
     __tablename__ = 'locations'

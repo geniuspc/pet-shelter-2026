@@ -1,7 +1,7 @@
 import json
 import requests
 mono_url = 'https://monobank.ua'
-site_url = ''
+site_url = 'localhost:8000'
 token = ''
 def create_payment(order_id, amount_uah):
     paycheck = {

@@ -40,7 +40,7 @@ def upload_found(
 ):
     return handle_upload(file, lat, lon, contact, "found")
 
-def handle_upload(file, lat, lon, contact, status):
+def handle_upload(file, lat, lon, contact, status, age, gender):
     db = SessionLocal()
 
     file_path = os.path.join("../photos", file.filename)
@@ -51,7 +51,9 @@ def handle_upload(file, lat, lon, contact, status):
     dog = Dog(
         path=file_path,
         contact=contact,
-        status=status
+        status=status,
+        age=age,
+        gender=gender
     )
 
     db.add(dog)
