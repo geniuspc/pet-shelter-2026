@@ -4,6 +4,7 @@ from database import Base
 class Animal(Base):
     __tablename__ = 'animals'
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
     path = Column(String)
     age = Column(Integer)
     gender = Column(String)

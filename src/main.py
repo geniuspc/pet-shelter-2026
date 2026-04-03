@@ -4,12 +4,12 @@ import requests
 import shutil
 from database import SessionLocal, engine, Base
 from model import Animal
+Base.metadata.create_all(engine)
 os.makedirs('photos', exist_ok=True)
 os.makedirs('saved_images', exist_ok=True)
 
 app = FastAPI()
 os.makedirs("../photos", exist_ok=True)
-Base.metadata.create_all(engine)
 @app.post("/items")
 def create_items(name: str, description: str):
     db = SessionLocal()
@@ -24,31 +24,39 @@ def create_items(name: str, description: str):
 
 @app.post("/upload/lost")
 def upload_lost(
+    name: str = Form(...),
     file: UploadFile = File(...),
     lat: float = Form(...),
     lon: float = Form(...),
-    contact: str = Form(...)
+    contact: str = Form(...),
+    age: int = Form(None),
+    gender: str = Form(None)
 ):
-    return handle_upload(file, lat, lon, contact, "lost")
+    return handle_upload(name, file, lat, lon, contact, "lost")
 
 @app.post("/upload/found")
 def upload_found(
+    name: str = Form(...),
     file: UploadFile = File(...),
     lat: float = Form(...),
     lon: float = Form(...),
-    contact: str = Form(...)
+    contact: str = Form(...),
+    age: int = Form(None),
+    gender: str = Form(None)
 ):
-    return handle_upload(file, lat, lon, contact, "found")
+    return handle_upload(name, file, lat, lon, contact, "found", age, gender)
 
-def handle_upload(file, lat, lon, contact, status, age, gender):
+def handle_upload(name, file, lat, lon, contact, status, age=None, gender=None):
     db = SessionLocal()
 
-    file_path = os.path.join("../photos", file.filename)
+    file_path = os.path.join("photos", file.filename)
+    os.makedirs("photos", exist_ok=True)
 
     with open(file_path, "wb") as f:
         f.write(file.file.read())
 
     animal = Animal(
+        name=name,
         path=file_path,
         contact=contact,
         status=status,
@@ -60,7 +68,7 @@ def handle_upload(file, lat, lon, contact, status, age, gender):
     db.commit()
     db.refresh(animal)
 
-    return {"id": animal.id}
+    return {"id": animal.id, "name": animal.name}
 
 @app.get("/items")
 def get_items():
@@ -69,7 +77,14 @@ def get_items():
     items = db.query(Animal).all()
 
     return [
-        {"id": i.id, "path": i.path, "status": i.status}
+        {"id": i.id,
+         "path": i.path,
+         "status": i.status,
+         "name": i.name,
+         "lat": i.lat,
+         "lon": i.lon,
+         "contact": i.contact
+        }
         for i in items
     ]
 
