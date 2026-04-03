@@ -117,11 +117,14 @@ def image_saver(url, folder_name, file_name):
 images = [f for f in os.listdir('photos') if f.lower().endswith(('.jpg', '.png', '.jpeg', '.webp'))]
 os.mkdir('./saved_images')
 size_limit = 200 * 1024 * 1024
-for file_name in os.listdir('./photos'):
-    file_path = os.path.join('photos', file_name)
-    file_size = os.path.getsize(file_path)
-    if file_size <= size_limit:
-        shutil.move(file_path, os.listdir('./saved_images')[0])
+def img_sorter(id, confidence_score):
+    for file_name in os.listdir('./photos'):
+        file_path = os.path.join('photos', file_name)
+        file_size = os.path.getsize(file_path)
+        if file_size <= size_limit and confidence_score >= 0.8:
+            shutil.move(file_path, os.listdir('./saved_images')[0])
+    return os.listdir('./saved_images')
+
 
 
 
