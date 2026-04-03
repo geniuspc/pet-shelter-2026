@@ -1,63 +1,24 @@
-import random
-from sentence_transformers import SentenceTransformer
-import chromadb as cd
-from sklearn.ensemble import IsolationForest
-import joblib as jl
-import os 
-import logging
-import numpy as np 
+from sqlalchemy import Column, Integer, String
+from database import Base
 
-class MLHandler():
+class Dog(Base):
+    __tablename__ = 'dogs'
+    id = Column(Integer, primary_key=True, index=True)
+    path = Column(String)
+    status = Column(String)
+    contact = Column(String)
 
-    def __init__(self , model_name = "clip-ViT-B-32"):
+class Location(Base):
+    __tablename__ = 'locations'
+    id = Column(Integer, primary_key=True, index=True)
+    dog_id = Column(Integer)
+    lat = Column(String)
+    lon = Column(String)
 
-        self.device = "cpu"
-
-        self.model = SentenceTransformer(model_name = model_name , device= self.device)
-
-        self.client = cd.PersistentClient(path = "./chromadb")
-
-        self.collection = self.client.get_or_create_collection("vector_database_dogs")
-
-        self.is_valid = False
-
-    def _load_detector(self , path_to_validator):
-        
-        if os.path.exists(path_to_validator):
-
-            validator = jl.load(path_to_validator)
-
-            logging.info("Validator was successfuly loaded")
-
-            return validator
-
-        logging.warning("WARN ! Validator wasn`t trained , use fallback training session")
-
-        validator =  IsolationForest(n_estimators = 100 , random_state = 42 , contamination=0.05)
-
-        return validator
-
-    #in prod
-    def train_validator(self) :
-
-        #TODO : train model d
-        logging.info("wmwdwdwd")
-
-    def encode_image(self , image) -> np.ndarray:
-
-        emb = self.model.encode(image)
-
-        #TODO : normalize 
-
-
-    #in prod
-    def is_valid(self , embeddings : np.ndarray , path : str) -> bool :
-
-        validator = self._load_detector(path)
-
-        if validator.predict(embeddings[0]) == 1 :
-
-            is_valid = True
-
-        return is_valid
+class Match(Base):
+    __tablename__ = 'matches'
+    id = Column(Integer, primary_key=True, index=True)
+    lost_id = Column(Integer)
+    found_id = Column(Integer)
+    con_score = Column(String)
 
