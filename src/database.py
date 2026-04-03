@@ -28,4 +28,26 @@ class DBHandler():
             
             ))
 
-        logging.info("d")
+        logging.info("The dog was saved to vector db")
+
+    async def search_dog(self, ids : str , embeddings : np.ndarray) -> np.ndarray:
+
+        loop = asyncio.get_running_loop()
+
+        results = await loop.run_in_executor(None , lambda : self.collection.query(
+            ids=ids ,
+            query_embeddings = [embeddings] ,
+            n_results=5)
+        )
+
+        return results
+
+    async def delete_dog(self , ids : str):
+
+        loop = asyncio.get_running_loop()
+
+        await loop.run_in_executor(None , lambda : self.collection.delete(
+                ids = ids
+            ))
+
+        logging.info("The dog was deleted successfully!")
