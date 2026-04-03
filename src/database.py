@@ -16,7 +16,7 @@ class DBHandler():
 
         self.collection = self.client.get_or_create_collection("vector_database_dogs")  
         
-    async def save_dog(self , ids : str , metadata , embeddings : np.ndarray):
+    async def save_dog(self , ids : str , embeddings : np.ndarray):
 
         loop = asyncio.get_running_loop()
 
@@ -24,7 +24,6 @@ class DBHandler():
             
                 ids= [ids],
                 embeddings=[embeddings.tolist()],
-                metadata = [metadata]
             
             ))
 

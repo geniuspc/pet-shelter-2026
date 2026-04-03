@@ -1,9 +1,9 @@
 from zenml import step 
-from src.database import db_handler
 import numpy as np
+from database import db_handler 
 import asyncio
 
-@step 
-def validate_step(embedding : np.ndarray) -> np.ndarray: 
+@step
+def validate_step(embedding : np.ndarray) -> bool:
 
-    return asyncio.run(db_handler.encode_search(embedding))
+    return asyncio.run(db_handler.is_valid(embedding))

@@ -1,11 +1,9 @@
 from zenml import step 
-from src.database import db_handler
 import numpy as np
+from database import db_handler 
 import asyncio
 
-@step 
-def search_step(ids : str , embeddings : np.ndarray) -> np.ndarray: 
+@step
+def search_step(embedding : np.ndarray, id : str) -> np.ndarray:
 
-    return asyncio.run(db_handler.search_dog(
-        ids = ids ,
-       embeddings = embeddings))
+    return asyncio.run(db_handler.search_dog(embedding , id))

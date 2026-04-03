@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
+    "\\pipelines",
     "\\src",
     "\\steps"
   ],
+  "SelectedNode": "\\pipelines\\find_dog_pipeline.py",
   "PreviewInSolutionExplorer": false
 }

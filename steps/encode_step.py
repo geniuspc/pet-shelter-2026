@@ -1,10 +1,9 @@
 from zenml import step 
-from src.model import encode_image
+from model import ml_handler
 import numpy as np
+import asyncio
 
-@step 
-def encode_step(image) -> np.ndarray: 
-
-    results = encode_image(image)
-
-    return results
+@step
+def encode_step(image_path = "./temp/file_test.jpg") -> np.ndarray:
+    
+    asyncio.run(ml_handler.encode_image(image_path))

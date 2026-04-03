@@ -38,16 +38,25 @@ class MLHandler():
         return validator
 
     #in prod
-    def train_validator(self) :
+    def train_validator(self , embeddings : np.ndarray) :
 
-        #TODO : train model d
-        logging.info("wmwdwdwd")
+        model = IsolationForest(n_estimators=100 , contamination = 0.05 , random_state = 42)
+
+        model.fit(embeddings)
+
+        return model
+
+        logging.info("Model was successfully , trained")
 
     def encode_image(self , image) -> np.ndarray:
 
-        emb = self.model.encode(image , convert_to_numpy = True)
+        emb = self.model.encode(image)
 
-        #TODO : normalize 
+        norm = np.linglang.norm(emb)
+
+        normalized_emb = emb / norm
+
+        return normalized_emb
 
 
     #in prod
@@ -61,4 +70,4 @@ class MLHandler():
 
         return is_valid
 
-ml_core = MLHandler()
+ml_handler = MLHandler()
