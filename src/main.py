@@ -3,7 +3,7 @@ import os
 import requests
 import shutil
 from database import SessionLocal, engine, Base
-from model import Dog
+from model import Animal
 os.makedirs('photos', exist_ok=True)
 os.makedirs('saved_images', exist_ok=True)
 
@@ -14,7 +14,7 @@ Base.metadata.create_all(engine)
 def create_items(name: str, description: str):
     db = SessionLocal()
 
-    item = Dog(name=name, description=description)
+    item = Animal(name=name, description=description)
 
     db.add(item)
     db.commit()
@@ -48,7 +48,7 @@ def handle_upload(file, lat, lon, contact, status, age, gender):
     with open(file_path, "wb") as f:
         f.write(file.file.read())
 
-    dog = Dog(
+    animal = Animal(
         path=file_path,
         contact=contact,
         status=status,
@@ -56,17 +56,17 @@ def handle_upload(file, lat, lon, contact, status, age, gender):
         gender=gender
     )
 
-    db.add(dog)
+    db.add(animal)
     db.commit()
-    db.refresh(dog)
+    db.refresh(animal)
 
-    return {"id": dog.id}
+    return {"id": animal.id}
 
 @app.get("/items")
 def get_items():
     db = SessionLocal()
 
-    items = db.query(Dog).all()
+    items = db.query(Animal).all()
 
     return [
         {"id": i.id, "path": i.path, "status": i.status}
@@ -76,7 +76,7 @@ def get_items():
 @app.get("/items/{item_id}")
 def get_item(item_id: int):
     db = SessionLocal()
-    item = db.query(Dog).filter(Dog.id == item_id).first()
+    item = db.query(Animal).filter(Animal.id == item_id).first()
     if item:
         return {
             "id": item.id,

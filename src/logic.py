@@ -1,22 +1,22 @@
-from model import Dog
+from model import Animal
 
-def create_dog(db, path, contact, status):
-    dog = Dog(path=path,
+def create_animal(db, path, contact, status):
+    animal = Animal(path=path,
               contact=contact,
               status=status
     )
-    db.add(dog)
+    db.add(animal)
     db.commit()
-    db.refresh(dog)
-    return dog
+    db.refresh(animal)
+    return animal
 
-def get_dog(db, dog_id):
-    return db.query(Dog).filter(Dog.id == dog_id).first()
+def get_animal(db, animal_id):
+    return db.query(Animal).filter(Animal.id == animal_id).first()
 
 def update_status(db, dog_id, new_status):
-    dog = get_dog(db, dog_id)
-    if dog:
-        dog.status = new_status
+    animal = get_animal(db, animal_id)
+    if animal:
+        animal.status = new_status
         db.commit()
-        return dog
+        return animal
 
