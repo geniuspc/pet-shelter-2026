@@ -15,11 +15,7 @@ class MLHandler():
 
         self.model = SentenceTransformer(model_name = model_name , device= self.device)
 
-        self.client = cd.PersistentClient(path = "./chromadb")
-
-        self.collection = self.client.get_or_create_collection("vector_database_dogs")
-
-        self.is_valid = False
+        self.is_trained = False
 
     def _load_detector(self , path_to_validator):
         
@@ -37,37 +33,38 @@ class MLHandler():
 
         return validator
 
-    #in prod
+
     def train_validator(self , embeddings : np.ndarray) :
 
         model = IsolationForest(n_estimators=100 , contamination = 0.05 , random_state = 42)
 
         model.fit(embeddings)
 
-        return model
+        logging.info("Model was successfully trained")
 
-        logging.info("Model was successfully , trained")
+        return model
 
     def encode_image(self , image) -> np.ndarray:
 
         emb = self.model.encode(image)
 
-        norm = np.linglang.norm(emb)
+        norm = np.linalg.norm(emb)
 
         normalized_emb = emb / norm
 
         return normalized_emb
 
 
-    #in prod
-    def is_valid(self , embeddings : np.ndarray , path : str) -> bool :
+
+    def check_is_valid(self , embeddings : np.ndarray , path : str) -> bool :
 
         validator = self._load_detector(path)
 
-        if validator.predict(embeddings[0]) == 1 :
+        prediction = validator.predict(embeddings.reshape(1, -1))
 
-            is_valid = True
+        if prediction[0] == 1:
+            return True
 
-        return is_valid
+        return False
 
 ml_handler = MLHandler()

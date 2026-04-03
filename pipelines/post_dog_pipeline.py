@@ -5,9 +5,7 @@ from steps.train_decorator_step import train_decorator_step
 from steps.validate_step import validate_step
 
 @pipeline
-def post_dog_pipeline(enable_cache=False , id : str = "0"):
-
-    id += 1
+def post_dog_pipeline(enable_cache=False , animal_id : str = "0"):
 
     encoded_emb = encode_step()
 
@@ -15,5 +13,5 @@ def post_dog_pipeline(enable_cache=False , id : str = "0"):
 
     is_valid = validate_step(encoded_emb)
 
-    save_step(id)
+    save_step(embeddings=encoded_emb)
 

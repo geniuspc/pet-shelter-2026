@@ -15,9 +15,13 @@ def find_dog_pipeline(enable_cache = False, confidence : str = "0.8" , run_id: s
 
     is_valid = validate_step(encoded_emb)
 
-    save_step(encoded_emb)
+    save_step(embeddings=encoded_emb)
 
-    search_step(encoded_emb, id)
+    search_step(embedding=encoded_emb)
+    
+    conf_score = search_step(embedding=encoded_emb)
+    
+    conf_str = f"{round(conf_score * 100, 2)}%"
 
-    response_step(ids = run_id , confidence = confidence, is_valid = is_valid)
+    response_step(ids = run_id , confidence = conf_str, is_valid = is_valid)
 
