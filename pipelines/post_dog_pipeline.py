@@ -11,7 +11,5 @@ def post_dog_pipeline(enable_cache=False , animal_id : str = "0"):
 
     train_decorator_step(encoded_emb)
 
-    is_valid = validate_step(encoded_emb)
-
-    save_step(embeddings=encoded_emb)
+    save_step(embeddings=encoded_emb , ids = animal_id)
 

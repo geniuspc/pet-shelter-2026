@@ -1,16 +1,18 @@
+from typing import Tuple
 from zenml import step
 import numpy as np
-from database import db_handler
+from src.database import db_handler
 import asyncio
  
  
 @step
-def search_step(embedding: np.ndarray) -> dict:
-
+def search_step(embedding: np.ndarray) -> Tuple[str, float]:
+ 
     results = asyncio.run(db_handler.search_animal(embedding))
-
-    distance = results['distances'][0][0]
-
-    confidence = max(0, 1 - distance)
-
-    return float(confidence)
+ 
+    matched_id: str = results["ids"][0][0]
+    distance: float = results["distances"][0][0]
+ 
+    confidence = max(0.0, 1.0 - (distance / 2.0))
+ 
+    return matched_id, float(confidence)

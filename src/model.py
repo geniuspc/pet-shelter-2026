@@ -13,7 +13,7 @@ class MLHandler():
 
         self.device = "cpu"
 
-        self.model = SentenceTransformer(model_name = model_name , device= self.device)
+        self.model = SentenceTransformer(model_name , device= self.device)
 
         self.is_trained = False
 
