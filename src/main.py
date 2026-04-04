@@ -2,9 +2,9 @@ from fastapi import FastAPI, UploadFile, File, Form, Path
 import os
 import requests
 import shutil
-from database import SessionLocal, engine, Base
-from model import Animal
-Base.metadata.create_all(engine)
+from src.database import SessionLocal, engine, Base
+from src.model import Animal
+
 os.makedirs('photos', exist_ok=True)
 os.makedirs('saved_images', exist_ok=True)
 

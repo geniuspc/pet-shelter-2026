@@ -1,17 +1,24 @@
 import streamlit as st
+import os
+from src.database import SessionLocal, engine, Base
+from src.model import Animal, Location, Match
+
+Base.metadata.create_all(bind=engine) 
 
 def show():
     st.markdown("""
         <div style="text-align: center; padding: 20px;">
-            <h1 style="font-size: 55px;">🐾 Bobik Rescue</h1>
+            <h1 style="font-size: 55px;">🐾 Animal Rescue</h1>
             <p style="font-size: 20px; color: #888;">Допомагаємо чотирилапим знайти шлях додому в Дніпрі</p>
         </div>
     """, unsafe_allow_html=True)
 
-    #СТАТИСТИКА
-    total_pets = len(st.session_state.pets_db)
-    looking_for_home = sum(1 for p in st.session_state.pets_db if p['status'] == 'Шукає дім')
-    on_adaptation = sum(1 for p in st.session_state.pets_db if p['status'] == 'На адаптації')
+    db = SessionLocal()
+
+    # СТАТИСТИКА
+    total_pets = db.query(Animal).count()
+    looking_for_home = db.query(Animal).filter(Animal.status == 'Шукає дім').count()
+    on_adaptation = db.query(Animal).filter(Animal.status == 'На адаптації').count()
 
     st.write("")
     s1, s2, s3 = st.columns(3)
@@ -29,7 +36,7 @@ def show():
     
     with col1:
         with st.container(border=True):
-            st.markdown("### 🐕 Я знайшов тварину")
+            st.markdown("### 🐕 Я знайшов тварину друга")
             st.write("Побачили самотнього собаку чи кота? Додайте фото та локацію в нашу базу.")
             if st.button("Створити оголошення", key="go_found"):
                 st.switch_page("views/found.py")
@@ -47,13 +54,23 @@ def show():
     with st.container(border=True):
         c1, c2 = st.columns([1, 2])
         with c1:
-            first_pet_img = st.session_state.pets_db[0]["img"]
-            st.image(first_pet_img, use_container_width=True) 
+            first_pet = db.query(Animal).filter(Animal.path != None).first()
+            
+            if first_pet and os.path.exists(first_pet.path):
+                st.image(first_pet.path, use_container_width=True) 
+            else:
+                if os.path.exists("logo_dniproanimals.png"):
+                    st.image("logo_dniproanimals.png", use_container_width=True)
+                else:
+                    st.info("Тут буде фото нашого першого підопічного 🐾")
+
         with c2:
             st.markdown("### 🏠 Подаруйте сім'ю")
             st.write("У нашому каталозі десятки чудових тварин, які мріють про люблячих господарів. Подивіться анкети наших підопічних.")
             if st.button("Перейти в каталог притулку", key="go_catalog"):
                 st.switch_page("views/catalog.py")
+
+    db.close()
 
 if __name__ == "__main__":
     show()

@@ -1,17 +1,23 @@
 import streamlit as st
+from src.payment import create_payment
+import uuid
 
-st.set_page_config(page_title="Rescue Bobik", page_icon="logo_dniproanimals.png", layout="centered")
+from src.database import engine, Base
+from src.model import Animal, Location, Match
+Base.metadata.create_all(bind=engine)
+
+st.set_page_config(page_title="Animal Rescue", page_icon="logo_dniproanimals.png", layout="centered")
 
 st.markdown("""
 <style>
     [data-testid="stSidebarUserContent"] {
         display: flex;
         flex-direction: column;
-        height: 64vh;
+        height: 60vh;
     }
 
     [data-testid="stSidebarUserContent"] > div:last-child {
-        margin-top: 100%;
+        margin-top: 0px;
         padding-bottom: 40px;
     }
 
@@ -25,7 +31,7 @@ st.markdown("""
         color: white !important;
         border: none;
         font-weight: bold;
-        margin-bottom: 250px;
+        margin-bottom: 10px;
     }
     
     [data-testid="stSidebar"] .stButton>button:hover {
@@ -40,14 +46,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-#ініціалізація бази
-if 'pets_db' not in st.session_state:
-    st.session_state.pets_db = [
-        {"id": 0, "name": "Барон", "breed": "Кіт", "age": 2, "status": "Шукає дім", "desc": "Знайдений на Перемозі.", "img": "photo/0E1A8113.jpeg"},
-        {"id": 1, "name": "Альма", "breed": "Собака", "age": 1, "status": "На адаптації", "desc": "Лагідна, вакцинована.", "img": "photo/0E1A8132.jpeg"},
-        {"id": 2, "name": "Рекс", "breed": "Собака", "age": 5, "status": "Шукає дім", "desc": "Охоронець.", "img": "photo/0E1A8136.jpeg"},
-        {"id": 3, "name": "Мурчик", "breed": "Кіт", "age": 3, "status": "Шукає дім", "desc": "Дуже грайливий.", "img": "photo/0E1A8159.jpeg"},
-    ]
+
 
 #навігація
 pg = st.navigation({
@@ -67,8 +66,29 @@ pg.run()
 st.sidebar.divider()
 st.sidebar.subheader("Підтримка проєкту")
 
-if st.sidebar.button("💰 Зробити донат", key="side_donate"):
-    st.sidebar.info("Тут бекендер підключить Monobank")
+with st.sidebar:
+    st.header("Підтримати притулок 🍯")
+    st.write("Ваші донати допомагають купувати корм та ліки.")
+    
+    amount = st.number_input("Сума донату (грн)", min_value=10, value=100)
+    
+    if st.button("💳 Сформувати рахунок"):
+        # Генеруємо рандомний ID для платежу
+        order_id = f"donate_{uuid.uuid4().hex[:8]}"
+        
+        with st.spinner("Зв'язуємося з банком..."):
+            res = create_payment(order_id, amount)
+            
+        if "error" in res:
+            st.error(res["error"])
+            st.info("Перевірте, чи вставлений правильний токен у src/payment.py")
+        else:
+            # Отримуємо посилання на оплату
+            payment_url = res.get("pageUrl")
+            if payment_url:
+                st.success("Рахунок створено!")
+                # Streamlit не може сам відкрити вкладку, тому створюємо кнопку-посилання
+                st.link_button("👉 Перейти до оплати", payment_url)
 
 try:
     st.sidebar.image("logo_dniproanimals.png", width=230)
