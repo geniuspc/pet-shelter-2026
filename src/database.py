@@ -5,6 +5,9 @@ import os
 import logging
 import numpy as np
 import asyncio
+from functools import partial
+
+from steps.encode_step import ml_handler
  
  
 class DBHandler():
@@ -69,6 +72,34 @@ class DBHandler():
         await loop.run_in_executor(None, lambda: self.collection.delete(ids=ids))
 
         logging.info(f"Animal '{ids}' deleted successfully.")
+
+    async def fill_db(self , dir_fol : str) -> None:
+
+        loop = asyncio.get_running_loop()
+
+        filenames = [f for f in os.listdir(dir_fol) if f.lower().endswith((".jpg" , ".png" , ".jpeg"))]
+
+        if not filenames :
+
+            logging.info("Folder is empty")
+
+            return
+            
+        for filename in filenames :
+
+            full_path = os.path.join(dir_fol , filename)
+
+            file_id = os.path.splitext(filename)[0]
+
+            try:
+
+                emb = await loop.run_in_executor(None , lambda : ml_handler.encode_image(image=full_path))
+
+                await loop.run_in_executor(None , lambda : self.collection.add( ids = [file_id] , embeddings= [emb.tolist()]))
+
+            except Exception as e :
+
+                logging.info(f"{filename} : {e}")
 
     def count(self) -> int:
 
