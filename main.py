@@ -23,4 +23,4 @@ async def run_search(image_path: str, dir_fol : str):
  
  
 if __name__ == "__main__":
-    asyncio.run(run_search("cat.3.jpg", "./temp"))
+    asyncio.run(run_search("cat.4.jpg", "./temp"))

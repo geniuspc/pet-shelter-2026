@@ -1,0 +1,5 @@
+mlvenv/
+*.jpg
+.git
+.idea
+.vs
